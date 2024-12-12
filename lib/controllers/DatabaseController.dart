@@ -64,6 +64,16 @@ class DatabaseController {
     return await db.insert('items', item.toJson());
   }
 
+  Future<List<Map<String, dynamic>>> fetchHistory(int itemId) async {
+    final db = await database;
+    return await db.query(
+      'history',
+      where: 'itemId = ?',
+      whereArgs: [itemId],
+      orderBy: 'date DESC',
+    );
+  }
+
   Future<int> updateItem(Item item) async {
     final db = await database;
     return await db

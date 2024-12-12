@@ -28,7 +28,7 @@ class _AddItemPageState extends State<AddItemPage> {
     if (pickedFile != null) {
       // final bytes = await File(pickedFile.path).readAsBytes();
       final imagesBytes = await pickedFile.readAsBytes();
-      setState(() async {
+      setState(() {
         // _image = bytes;
         _image = Uint8List.fromList(imagesBytes);
         // _image = Uint8List.fromList(await pickedFile.readAsBytes());

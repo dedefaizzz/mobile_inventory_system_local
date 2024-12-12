@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:mobile_inventory_system/controllers/DatabaseController.dart';
 import 'package:mobile_inventory_system/models/item_model.dart';
@@ -18,7 +16,7 @@ class _AddHistoryPageState extends State<AddHistoryPage> {
   final _quantityController = TextEditingController();
   final dbController = DatabaseController.instance;
 
-  Future<Void> saveHistory() async {
+  Future<void> saveHistory() async {
     if (_formKey.currentState!.validate()) {
       final quantity = int.tryParse(_quantityController.text) ?? 0;
       final isIncoming = _transactionType == 'Masuk';
@@ -29,24 +27,31 @@ class _AddHistoryPageState extends State<AddHistoryPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Stok tidak mencukupi!')),
         );
+        return;
       }
 
-      final db = await dbController.database;
-      await db.update(
-        'items',
-        {'Stock': newStock},
-        where: 'id = ?',
-        whereArgs: [widget.item.id],
-      );
+      try {
+        final db = await dbController.database;
+        await db.update(
+          'items',
+          {'Stock': newStock},
+          where: 'id = ?',
+          whereArgs: [widget.item.id],
+        );
 
-      // simpan riwayat transaksi
-      await dbController.insertHistory(
-        itemId: widget.item.id!,
-        type: _transactionType,
-        quantity: quantity,
-        dateTime: DateTime.now(),
-      );
-      Navigator.pop(context, true);
+        // simpan riwayat transaksi
+        await dbController.insertHistory(
+          itemId: widget.item.id!,
+          type: _transactionType,
+          quantity: quantity,
+          dateTime: DateTime.now(),
+        );
+        Navigator.pop(context, true);
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+      }
     }
   }
 
@@ -75,9 +80,16 @@ class _AddHistoryPageState extends State<AddHistoryPage> {
                 controller: _quantityController,
                 decoration: const InputDecoration(labelText: 'Jumlah'),
                 keyboardType: TextInputType.number,
-                validator: (value) => (value == null || value.isEmpty)
-                    ? 'Jumlah wajib diisi'
-                    : null,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Jumlah wajib diisi';
+                  }
+                  final quantity = int.tryParse(value);
+                  if (quantity == null || quantity <= 0) {
+                    return 'Jumlah harus lebih dari 0';
+                  }
+                  return null;
+                },
               ),
               const Spacer(),
               ElevatedButton(
