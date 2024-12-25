@@ -89,6 +89,14 @@ class _AddItemPageState extends State<AddItemPage> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
+              _image != null
+                  ? Image.memory(_image!, height: 100)
+                  : const Text('Belum ada gambar'),
+              ElevatedButton(
+                onPressed: pickImage,
+                child: const Text('Pilih Gambar'),
+              ),
+              const SizedBox(height: 16.0),
               TextFormField(
                 controller: _nameController,
                 decoration: const InputDecoration(labelText: 'Nama Barang'),
@@ -107,14 +115,6 @@ class _AddItemPageState extends State<AddItemPage> {
                 controller: _priceController,
                 decoration: const InputDecoration(labelText: 'Harga'),
                 keyboardType: TextInputType.number,
-              ),
-              const SizedBox(height: 16.0),
-              _image != null
-                  ? Image.memory(_image!, height: 100)
-                  : const Text('Belum ada gambar'),
-              ElevatedButton(
-                onPressed: pickImage,
-                child: const Text('Pilih Gambar'),
               ),
               const Spacer(),
               ElevatedButton(

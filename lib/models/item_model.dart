@@ -37,7 +37,8 @@ class Item {
         category: json['category'],
         price: json['price'],
         stock: json['stock'],
-        imagePath:
-            json['imagePath'] != null ? base64Decode(json['imagePath']) : null,
+        imagePath: json['imagePath'] is String
+            ? base64Decode(json['imagePath'])
+            : json['imagePath'] as Uint8List?,
       );
 }
